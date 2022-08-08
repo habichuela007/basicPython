@@ -5,3 +5,4 @@ if edad > 17: #siempre despu[es de un condicional debe haber 4 espacios
 else:
     print('Eres menor de edad')
     #pass
+#elif
