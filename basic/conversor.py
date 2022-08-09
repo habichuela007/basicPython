@@ -1,10 +1,13 @@
+from queue import PriorityQueue
+
+
 def conversor(typePeso,dollarValue):
-    pesos = input("How many Colombian Pesos do you have? ")
+    pesos = input("How many " + typePeso+ " Pesos do you have? ")
     pesos = float(pesos)
-    dollarValue = 3875
     dollars = pesos/dollarValue
     dollars = round(dollars,2)
-    dollars = str(dollard)
+    dollars = str(dollars)
+    print("TIenes $"+ dollars + "dolares")
     
 
 menu = """
@@ -18,8 +21,12 @@ Choose an option
 
 """
 option = int(input(menu))
-
 #print(menu)
-
-
 if option ==1:
+    conversor("Colombian",3875)
+elif option ==2:
+    conversor("Argentinian",65)
+elif option ==3:
+    conversor("Mexican",65)
+else:
+    print("Ingrese una opción válida")
