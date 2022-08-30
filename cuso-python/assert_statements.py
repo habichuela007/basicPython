@@ -7,12 +7,10 @@ def divisors(num):
     
 
 def run ():
-    try:
-        num = int(input('Ingresa un numero: '))
-        print(divisors(num))
+        num = input('Ingresa un numero: ')
+        assert num.isnumeric(), "Debes ingresar un número"
+        print(divisors(int(num)))
         print('Termino')
-    except ValueError:
-        print("You MUST type a number")
 
 if __name__ == '__main__':
     run()
