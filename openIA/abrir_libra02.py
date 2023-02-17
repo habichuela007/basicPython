@@ -33,10 +33,9 @@ time.sleep(10)
 window_spec = desktop.window(title=nombre_ventana)
 
 ###COMPROBADO####
-#print(window_spec)
+time.sleep(1)
 
 #window = window_spec.window(title = nombre_ventana)
-time.sleep(10)
 
 # Esperar a que aparezca la ventana
 #window = window_spec.wait('Exists')
@@ -63,12 +62,11 @@ time.sleep(10)
 
 
 # Obtener el control de la ventana de la aplicación
-#app = pywinauto.application.Application()
+app = pywinauto.application.Application()
 #ventana = app.connect(title = nombre_ventana, backend = 'uia').window()
 #ventana = app.window(title = nombre_ventana)
 #ventana.wait('visible')
 
-# Conectar con la aplicación
 
 # Ahora se puede interactuar con la aplicación utilizando la referencia de la ventana
 
