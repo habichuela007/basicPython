@@ -61,7 +61,10 @@ for field in text_fields:
     print(f"Nombre del campo: {field.get_properties()['friendly_class_name']}")
 
 
-time.sleep(1)
+time.sleep(3)
 parent.type_keys("gabriels{TAB}")
 time.sleep(1)
 parent.type_keys("Gab$1984")
+time.sleep(1)
+parent.type_keys("{ENTER}")
+
