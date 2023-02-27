@@ -71,47 +71,50 @@ print(f"El campo 'BUSCAR' está ubicado en la posición ({x}, {y})")
 
 print("***************************FIN OBTENER COORDENADAS CAMPO 'BUSCAR'********************************")
 
-print("***************************ABRIR 'MENU POR USUARIO'********************************")
+print("***************************ABRIR 'USUARIO'********************************")
 mouse.click(button = "left", coords=(x,y))
 time.sleep(2)
-child1.type_keys("menu{SPACE}por{SPACE}usuario")
+child1.type_keys("USUARIOS2")
 time.sleep(2)
 child1.type_keys("{ENTER}")
-print("***************************FIN ABRIR 'MENU POR USUARIO'********************************")
-
-# Obtener la posición x e y de la ventana en el punto inferior derecho
-x = rect[2]
-y = rect[3]
-#print(f"El punto inferior derecho de {child1_name} está ubicado en la posición ({x}, {y})")
+print("***************************FIN ABRIR 'MENU USUARIO'********************************")
 time.sleep(2)
 
-print("***************************BUSCANDO CAMPO 'CARGOS COLABORADORES'********************************")
-#Calcular la posición del clic de acuerdo a la cuadrícula
-x = round(x/8)
-y = round(y/4.5)
-print(f"El campo Cargos Colaboradores está ubicado en la posición ({x}, {y})")
-time.sleep(2)
-mouse.double_click(button = "left", coords=(x,y))
-print("***************************FIN BUSCANDO CAMPO 'CARGOS COLABORADORES'********************************")
+sleep_type = 1
+print("***************************PULSAR BUSCAR********************************")
+time.sleep(sleep_type)
+child1.type_keys("{F7}")
+print("***************************FIN PULSAR BUSCAR********************************")
 
-#Volver a cargar x e y#
-x = rect[2]
-y = rect[3]
-print(f"El punto inferior derecho de {child1_name} está ubicado en la posición ({x}, {y})")
+print("***************************ESCOGER CAMPO Y ESCRIBIR********************************")
+time.sleep(sleep_type)
+child1.type_keys("{TAB}")
+time.sleep(sleep_type)
+child1.type_keys("{%}GABRIEL{SPACE}ED{%}")
+print("***************************FIN ESCOGER CAMPO Y ESCRIBIR********************************")
 
-print("***************************BUSCANDO CAMPO 'BOTON EXPORTAR EXCEL'********************************")
-#Calcular la posición del botón EXCEL de acuerdo a la cuadrícula
-x = round(x/5.5)
-y = round(y-(y/1.085))
-print(f"El campo EXCEL está ubicado en la posición ({x}, {y})")
-mouse.click(button = "left", coords=(x,y))
-print("***************************FIN BUSCANDO CAMPO 'BOTON EXPORTAR EXCEL'********************************")
+print("***************************PULSAR EJECUTAR********************************")
+time.sleep(sleep_type)
+child1.type_keys("{F8}")
+print("***************************FIN PULSAR EJECUTAR********************************")
 
-print("***************************OK A GUARDAR********************************")
-child1 = app.window(title = child1_name)
-child1.print_control_identifiers()
-time.sleep(15)
+print("***************************ESCOGER CAMPO Y ESCRIBIR********************************")
+time.sleep(sleep_type)
+child1.type_keys("{TAB}")
+time.sleep(sleep_type)
+child1.type_keys("{TAB}")
+time.sleep(sleep_type)
+child1.type_keys("{TAB}")
+time.sleep(sleep_type)
+child1.type_keys("1803998440")
+print("***************************FIN ESCOGER CAMPO Y ESCRIBIR********************************")
+
+print("***************************PULSAR Y ACEPTAR GRABAR********************************")
+time.sleep(sleep_type)
+child1.type_keys("{F10}")
+time.sleep(sleep_type)
+time.sleep(sleep_type)
+time.sleep(sleep_type)
 child1.type_keys("{ENTER}")
-print("***************************FIN OK A GUARDAR********************************")
-
-print("***************************WINDOW MAIN********************************")
+print("***************************FIN PULSAR Y ACEPTAR GRABAR********************************")
+print("***************************!!!..LA CONTRASEÑA SE CAMBIÓ EXITOSAMENTE..!!********************************")
