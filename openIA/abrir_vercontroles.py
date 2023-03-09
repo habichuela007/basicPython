@@ -9,7 +9,7 @@ import pywinauto
 from pywinauto import Application, Desktop
 import time
 # Especifica la ruta del archivo ejecutable y los argumentos a pasar
-nombre_ventana = "LIBRA EDISA"
+parent_name = "LIBRA EDISA"
 # Ruta del archivo .exe a abrir
 exe_path = r"C:\Program Files\Libra\Libra.exe"
 # Argumentos del comando
@@ -18,24 +18,13 @@ arguments = ['-url', 'https://libra.bioalimentar.com:443/forms/frmservlet?config
 # Abrir el archivo .exe con los argumentos dados
 app = Application(backend='uia').start(exe_path + " " + " ".join(arguments))
 
-
-# Crea una instancia de Application
-app2 = pywinauto.Application(backend='uia')
-
 time.sleep(10)
-# Conecta a una ventana por su título
-window = app2.connect(title=nombre_ventana)
-print("window: ", window)
+# Esperar a que aparezca la ventana de inicio de sesión
+parent = app.window(title=parent_name)
 
-time.sleep(10)
-login = window.menu()
+print("***********************LIBRA EDISA****************************")
+parent.print_control_identifiers()
+time.sleep(1)
 
-time.sleep(10)
-
-# Obtener el objeto del control de texto
-control = login.window_control(title=nombre_ventana)
-print("control ", control)
-
-# Obtener el texto del control
-texto = control.window_text()
-print("texto: ", texto)
+dialog = parent.Dialog()
+dialog.window(title="Menu").select()

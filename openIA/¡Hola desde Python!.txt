@@ -1,0 +1,27 @@
+Dialog - 'LIBRA EDISA'    (L-9, T-9, R1929, B1029)
+['LIBRA EDISADialog', 'LIBRA EDISA', 'Dialog']
+child_window(title="LIBRA EDISA", control_type="Window")
+   | 
+   | TitleBar - ''    (L20, T-6, R1920, B29)
+   | ['TitleBar']
+   |    | 
+   |    | Menu - 'Sistema'    (L0, T0, R28, B28)
+   |    | ['SistemaMenu', 'Sistema', 'Menu', 'Sistema0', 'Sistema1']
+   |    | child_window(title="Sistema", auto_id="MenuBar", control_type="MenuBar")
+   |    |    |
+   |    |    | MenuItem - 'Sistema'    (L0, T0, R28, B28)
+   |    |    | ['MenuItem', 'Sistema2', 'SistemaMenuItem']
+   |    |    | child_window(title="Sistema", control_type="MenuItem")
+   |    |
+   |    | Button - 'Minimizar'    (L1740, T0, R1800, B28)
+   |    | ['Button', 'Minimizar', 'MinimizarButton', 'Button0', 'Button1']
+   |    | child_window(title="Minimizar", control_type="Button")
+   |    |
+   |    | Button - 'Restaurar'    (L1800, T0, R1859, B28)
+   |    | ['Button2', 'Restaurar', 'RestaurarButton']
+   |    | child_window(title="Restaurar", control_type="Button")
+   |    |
+   |    | Button - 'Cerrar'    (L1859, T0, R1920, B28)
+   |    | ['Button3', 'CerrarButton', 'Cerrar']
+   |    | child_window(title="Cerrar", control_type="Button")
+Traceback (most recent call last):
