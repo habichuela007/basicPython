@@ -2,7 +2,7 @@
 #Se quiere pasar el usuario y contraseña
 #"C:\Program Files\Libra\Libra.exe" -url https://libra.bioalimentar.com:443/forms/frmservlet?config=libra_saa -t 60000 -wlv 12.2.1.1.0 -fs S -ww 0 -wh 0 -dpi 0
 #"C:\Program Files\Libra\Libra.exe" -url https://pruebas.bioalimentar.com:443/forms/frmservlet?config=libra_saa -t 60000 -wlv 12.2.1.1.0 -fs S -ww 0 -wh 0 -dpi 0
-from msilib import type_key
+#from msilib import type_key
 import subprocess
 import pywinauto
 from pywinauto import Application, Desktop, mouse
