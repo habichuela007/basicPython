@@ -52,6 +52,8 @@ def reiniciar():
     lbl_total.config(text="")
     lbl_Tara.config(text="")
 
+
+
 # Crear la ventana
 root = tk.Tk()
 root.geometry("900x400")

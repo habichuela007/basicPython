@@ -7,7 +7,7 @@ conexion = mysql.connector.connect(
     port='33060',
     user='root',
     password='Bio.1234',
-    database='prb_analitica'
+    database='prod_pesos'
 )
 cursor = conexion.cursor()
 
@@ -25,7 +25,7 @@ def peso_total():
     pTotal = float(peso.get())
     lbl_total.config(text="Peso Total: " + str(pTotal))
     peso.delete(0, 'end')
-    btn_total.config(state='disabled') # Bloquear botón "peso total"
+    #btn_total.config(state='disabled') # Bloquear botón "peso total"
 
 
 def peso_Tara():
@@ -105,7 +105,7 @@ btn_Tara.pack(side=tk.LEFT, padx=25, fill=tk.X, expand=True)
 btn_enviar = tk.Button(row2, text="Enviar", font=("Arial", 25), command=enviar)
 btn_enviar.pack(side=tk.LEFT, padx=25, fill=tk.X, expand=True)
 
-btn_reiniciar = tk.Button(row3, text="Reiniciar", font=("Arial", 15), command=reiniciar)
+btn_reiniciar = tk.Button(row3, text="Reiniciar", font=("Arial", 12), command=reiniciar)
 btn_reiniciar.pack(side=tk.LEFT, padx=25, fill=tk.X, expand=True)
 
 # Crear los visualizadores de peso total y peso Tara
