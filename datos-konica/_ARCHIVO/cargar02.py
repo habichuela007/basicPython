@@ -1,4 +1,5 @@
 import os
+import shutil
 import pandas as pd
 import mysql.connector
 
@@ -21,6 +22,29 @@ def buscar_archivo(nombre_archivo):
     for archivo in os.listdir(carpeta_descargas):
         if archivo.startswith(nombre_archivo) and archivo[len(nombre_archivo):len(nombre_archivo) + 8].isdigit():
             return archivo
+
+
+def buscar_archivo_path(nombre_archivo):
+    # Leer el archivo de texto desde la carpeta Descargas
+    carpeta_descargas = os.path.join(os.path.expanduser("~"), "Downloads")
+    # Buscar el archivo que comience con el nombre_archivo seguido de 8 números
+    for archivo in os.listdir(carpeta_descargas):
+        if archivo.startswith(nombre_archivo) and archivo[len(nombre_archivo):len(nombre_archivo) + 8].isdigit():
+            return os.path.join(carpeta_descargas, archivo)
+
+def mover_archivo(archivo):
+    archivo_encontrado = buscar_archivo_path(archivo)
+    if archivo_encontrado:
+        # Ruta destino donde se moverá el archivo
+        ruta_destino = r"\\10.20.10.15\flux\impresora\DATA"
+
+        # Mover el archivo encontrado a la ubicación especificada
+        try:
+            shutil.move(archivo_encontrado, os.path.join(ruta_destino, os.path.basename(archivo_encontrado)))
+            print(f"Archivo movido correctamente a {ruta_destino}")
+        except shutil.Error as e:
+            print(f"Error al mover el archivo: {e}")
+
 
 def obtener_fecha(archivo):
     try:
@@ -53,6 +77,19 @@ def convertir_fecha_formato(fecha):
         print(f"Error: La fecha '{fecha}' tiene un formato inválido.")
         return None
     
+
+def escribir_log(nombre_archivo_log,mensaje_log):
+    # Obtener la ruta completa del archivo de log
+    #ruta_archivo_log = os.path.join(os.path.expanduser("~"), "Downloads", nombre_archivo_log)
+    ruta_archivo_log = os.path.join(os.path.expanduser("~"), "Downloads", nombre_archivo_log)
+
+    # Abre el archivo de log en modo de apendizaje (si no existe, se creará)
+    with open(ruta_archivo_log, "a") as archivo_log:
+        # Redirige la salida estándar al archivo de log
+        sys.stdout = archivo_log
+        print(mensaje_log)
+        sys.stdout = sys.__stdout__  # Restaura la salida estándar original
+
 
 def cargar_datos_t1(nombre_archivo, nombre_tabla):
     carpeta_descargas = os.path.join(os.path.expanduser("~"), "Downloads")
@@ -135,6 +172,7 @@ def cargar_datos_t1(nombre_archivo, nombre_tabla):
 
     else:
         print(f"No se encontró el archivo adecuado en la carpeta Descargas con el nombre: {nombre_archivo}.")
+
 
 def cargar_datos_t2(nombre_archivo, nombre_tabla):
     carpeta_descargas = os.path.join(os.path.expanduser("~"), "Downloads")
@@ -254,44 +292,201 @@ def cargar_datos_t2(nombre_archivo, nombre_tabla):
     else:
         print(f"No se encontró el archivo adecuado en la carpeta Descargas con el nombre: {nombre_archivo}.")
 
+
+def cargar_datos_t3(nombre_archivo, nombre_tabla):
+    carpeta_descargas = os.path.join(os.path.expanduser("~"), "Downloads")
+    archivo = buscar_archivo(nombre_archivo)
+
+    if archivo:
+        # Ruta completa del archivo
+        ruta_archivo = os.path.join(carpeta_descargas, archivo)
+
+        # Leer los datos desde el archivo y saltar las primeras 7 líneas
+        datos = pd.read_csv(ruta_archivo, sep="\t", skiprows=6, encoding="utf-16")
+
+        # Establecer la conexión a la base de datos MySQL
+        try:
+            config["port"] = puerto_bd  # Actualizar el puerto en la configuración
+            conexion = mysql.connector.connect(**config)
+            cursor = conexion.cursor()
+
+            # Crear la cadena de columnas para la inserción
+            columnas = list(datos.columns)
+            columnas = [
+            "user_name",
+            "total_counter ",
+            "total_large_size_counter ",
+            "no_of_originals_counter ",
+            "no_of_prints_counter ",
+            "duplex_print_counter ",
+            "total_no_pages_output ",
+            "duplex_print_rate",
+            "psc_a3 ",
+            "psc_a4 ",
+            "psc_b4 ",
+            "psc_b5 ",
+            "psc_55x85 ",
+            "psc_85x11 ",
+            "psc_85x14 ",
+            "psc_11x17 ",
+            "psc_long ",
+            "psc_other ",
+            "nin1_2in1 ",
+            "nin1_4in1 ",
+            "nin1_other ",
+            "nin1_nin1printrate ",
+            "copy_total_total ",
+            "copy_total_full_color ",
+            "copy_total_black ",
+            "copy_total_2color ",
+            "copy_total_single_color ",
+            "copy_large_size_total ",
+            "copy_large_size_full_color ",
+            "copy_large_size_black ",
+            "copy_large_size_2color ",
+            "copy_large_size_single_color ",
+            "copy_copypaper_allcolor ",
+            "copy_copypaper_full_color ",
+            "copy_copypaper_black ",
+            "copy_copypaper_monobicolor ",
+            "printer_total_total ",
+            "printer_total_full_color ",
+            "printer_total_black ",
+            "printer_total_2color ",
+            "printer_large_size_total ",
+            "printer_large_size_full_color ",
+            "printer_large_size_black ",
+            "printer_large_size_2color ",
+            "printer_printpaper_allcolor ",
+            "printer_printpaper_full_color ",
+            "printer_printpaper_black ",
+            "printer_printpaper_monobicolor ",
+            "color_total_full_color ",
+            "color_total_black ",
+            "color_total_2color ",
+            "color_total_single_color ",
+            "color_large_size_full_color ",
+            "color_large_size_black ",
+            "color_large_size_2color ",
+            "color_large_size_single_color ",
+            "scan_total_print_full_color ",
+            "scan_total_print_black ",
+            "scan_total_scans ",
+            "scan_total_fax_tx ",
+            "scan_large_size_print_full_color ",
+            "scan_large_size_print_black ",
+            "scan_large_size_scans ",
+            "scan_printpaper_allcolor ",
+            "scan_printpaper_full_color ",
+            "scan_printpaper_black ",
+            "no_of_prints_counter_fullcolor ",
+            "no_of_prints_counter_black ",
+            "no_of_prints_counter_monobiocolor ",
+            "fecha_contador", 
+            ]
+            columnas_str = ', '.join(columnas)
+
+            # Insertar los datos en la tabla MySQL
+            for _, fila in datos.iterrows():
+                valores = tuple(fila)
+                placeholders = ', '.join(['%s'] * len(valores))
+                sql = f"INSERT INTO `{nombre_tabla}` ({columnas_str}) VALUES ({placeholders});"
+                cursor.execute(sql, valores)
+            conexion.commit()
+            #print("Datos insertados correctamente en la tabla MySQL.")
+            
+        except mysql.connector.Error as error:
+            print(nombre_tabla)
+            print(f"Error al conectarse a la base de datos: {error}")
+
+        finally:
+            if conexion.is_connected():
+                cursor.close()
+                conexion.close()
+
+    else:
+        print(f"No se encontró el archivo adecuado en la carpeta Descargas con el nombre: {nombre_archivo}.")
+    
+    if archivo:
+        # Obtener la fecha desde el archivo
+        fecha = obtener_fecha(os.path.join(carpeta_descargas, archivo))
+        #print("Fecha leída desde el archivo:")
+        #print(fecha)
+
+        # Convertir la fecha al formato adecuado
+        fecha_formateada = convertir_fecha_formato(fecha)
+        if fecha_formateada:
+            try:
+                config["port"] = puerto_bd  # Actualizar el puerto en la configuración
+                conexion = mysql.connector.connect(**config)
+                cursor = conexion.cursor()
+
+                # Crear la cadena de columnas para la actualización
+                sql = f"UPDATE `{nombre_tabla}` SET fecha_contador = %s WHERE fecha_contador IS NULL"
+                values = (fecha_formateada,)
+                cursor.execute(sql, values)
+
+                conexion.commit()
+                #print("Fecha actualizada correctamente en la tabla MySQL.")
+
+            except mysql.connector.Error as error:
+                print(f"Error al conectarse a la base de datos: {error}")
+
+            finally:
+                if conexion.is_connected():
+                    cursor.close()
+                    conexion.close()
+
+    else:
+        print(f"No se encontró el archivo adecuado en la carpeta Descargas con el nombre: {nombre_archivo}.")
+
 # Variable para el archivo y la tabla
 nombre_archivo = "283_A1UF011003305_UC_"
 nombre_tabla = "283_A1UF011003305"
 cargar_datos_t1(nombre_archivo,nombre_tabla)
+#mover_archivo(nombre_archivo)
 
 nombre_archivo = "223_A1UG011006937_UC_"
 nombre_tabla = "223_A1UG011006937"
 cargar_datos_t1(nombre_archivo,nombre_tabla)
+#mover_archivo(nombre_archivo)
 
 nombre_archivo = "224e_A61H011006163_UC_"
 nombre_tabla = "224e_A61H011006163"
 cargar_datos_t2(nombre_archivo,nombre_tabla)
+#mover_archivo(nombre_archivo)
 
 nombre_archivo = "363_A1UE011015445_UC_"
 nombre_tabla = "363_A1UE011015445"
 cargar_datos_t1(nombre_archivo,nombre_tabla)
+#mover_archivo(nombre_archivo)
 
 nombre_archivo = "363_A1UE011016227_UC_"
 nombre_tabla = "363_A1UE011016227"
 cargar_datos_t1(nombre_archivo,nombre_tabla)
+#mover_archivo(nombre_archivo)
 
 nombre_archivo = "363_A1UE011104367_UC_"
 nombre_tabla = "363_A1UE011104367"
 cargar_datos_t1(nombre_archivo,nombre_tabla)
+#mover_archivo(nombre_archivo)
 
 nombre_archivo = "364e_A61F011024714_UC_"
 nombre_tabla = "364e_A61F011024714"
 cargar_datos_t2(nombre_archivo,nombre_tabla)
+#mover_archivo(nombre_archivo)
 
 nombre_archivo = "552_A2WV011008573_UC_"
 nombre_tabla = "552_A2WV011008573"
 cargar_datos_t1(nombre_archivo,nombre_tabla)
+#mover_archivo(nombre_archivo)
 
 nombre_archivo = "C227_A798011501042_UC_"
 nombre_tabla = "C227_A798011501042"
-cargar_datos_t2(nombre_archivo,nombre_tabla)
+cargar_datos_t3(nombre_archivo,nombre_tabla)
+#mover_archivo(nombre_archivo)
 
 nombre_archivo = "C554e_A5AY011013622_UC_"
 nombre_tabla = "C554e_A5AY011013622"
 cargar_datos_t2(nombre_archivo,nombre_tabla)
-
+#mover_archivo(nombre_archivo)

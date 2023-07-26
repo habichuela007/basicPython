@@ -1,0 +1,10 @@
+truncate table 223_A1UG011006937;
+truncate table 224e_A61H011006163;
+truncate table 283_A1UF011003305;
+truncate table 363_A1UE011015445;
+truncate table 363_A1UE011016227;
+truncate table 363_A1UE011104367;
+truncate table 364e_A61F011024714;
+truncate table 552_A2WV011008573;
+truncate table C227_A798011501042;
+truncate table C554e_A5AY011013622;

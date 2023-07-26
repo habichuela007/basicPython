@@ -1,1 +1,6 @@
 python3 -m pip install pandas
+
+
+pip install pandas
+pip install pywinauto
+pip install mysql-connector-python
