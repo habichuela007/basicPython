@@ -125,6 +125,7 @@ def verificar_descarga(patron_fecha,carpeta_descargas):
 
     if archivo_descargado:
         print(f"El archivo {archivo_descargado} se descargó exitosamente.")
+
     else:
         mensaje_log = f"{datetime.datetime.now()} - {url} Archivo No encontrado"
         escribir_log(nombre_archivo_log,mensaje_log)
@@ -552,3 +553,6 @@ cargar_datos_t3(nombre_archivo,nombre_tabla)
 nombre_archivo = "C554e_A5AY011013622_UC_"
 nombre_tabla = "C554e_A5AY011013622"
 cargar_datos_t2(nombre_archivo,nombre_tabla)
+
+mensaje_log = f"{datetime.datetime.now()} - EXPORTACION TERMINADA ***************************"
+escribir_log(nombre_archivo_log,mensaje_log)
