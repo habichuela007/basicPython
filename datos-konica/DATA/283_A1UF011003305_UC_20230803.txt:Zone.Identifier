@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=http://10.70.10.54/wcd/a_user.cgi
+HostUrl=http://10.70.10.54/wcd/a_filedownload

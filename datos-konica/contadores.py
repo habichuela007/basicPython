@@ -51,9 +51,9 @@ def ingresar(url,t_ingreso):
     time.sleep(8)  
 
 
-def verificar_ingreso(url, t_import_export, t_contador, t_salir):
+def verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas):
     # Obtener todos los elementos de la ventana en el escritorio
-    time.sleep(2)
+    time.sleep(10)
     windows = Desktop(backend="uia").windows()
     # Buscar la ventana de KONICA por título
     konica_window = None
@@ -64,6 +64,7 @@ def verificar_ingreso(url, t_import_export, t_contador, t_salir):
     # Si se encontró la ventana, Descargar
     if konica_window:
         descargar_contador(t_import_export, t_contador, t_salir)
+        verificar_descarga(patron_fecha,carpeta_descargas)
         time.sleep(2)
     else:
         mensaje_log = f"{datetime.datetime.now()} - {url} No se pudo ingresar"
@@ -132,12 +133,12 @@ def verificar_descarga(patron_fecha,carpeta_descargas):
             break
 
     if archivo_descargado:
-
+        #cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
         # Enviar el atajo Ctrl+Alt+Delete
         pyautogui.hotkey('alt','f4')
         #print(f"El archivo {archivo_descargado} se descargó exitosamente.")
     else:
-        mensaje_log = f"{datetime.datetime.now()} - {url} Archivo No encontrado"
+        mensaje_log = f"{datetime.datetime.now()} - {url} Archivo No encontrado en Descargas"
         escribir_log(nombre_archivo_log,mensaje_log)
 
 
@@ -182,7 +183,7 @@ def mover_archivo(archivo):
             shutil.move(archivo_encontrado, os.path.join(ruta_destino, os.path.basename(archivo_encontrado)))
             #print(f"Archivo movido correctamente a {ruta_destino}")
         except shutil.Error as e:
-            mensaje_log = f"{datetime.datetime.now()} - {archivo} Archivo No encontrado"
+            mensaje_log = f"{datetime.datetime.now()} - No se puede mover a storage, {archivo} no encontrado"
             escribir_log(nombre_archivo_log,mensaje_log)
             #print(f"Error al mover el archivo: {e}")
 
@@ -219,7 +220,7 @@ def convertir_fecha_formato(fecha):
         return None
     
 
-def cargar_datos_t1(nombre_archivo, nombre_tabla):
+def cargar_datos(url,nombre_archivo, nombre_tabla,columnas):
     carpeta_descargas = os.path.join(os.path.expanduser("~"), "Downloads")
     archivo = buscar_archivo(nombre_archivo)
 
@@ -247,11 +248,6 @@ def cargar_datos_t1(nombre_archivo, nombre_tabla):
             cursor = conexion.cursor()
 
             # Crear la cadena de columnas para la inserción
-            columnas = list(datos.columns)
-            columnas = [
-                "user_name", "total_counter", "total_large_size_counter", "no_of_originals_counter","no_of_prints_counter", "copy_total_total", "copy_large_size_total","printer_total_total", "printer_large_size_total", "scan_total_print","scan_scans", "scan_fax_tx", "scan_large_size_print", "scan_large_size_scans", "fecha_contador"
-            ]
-
             columnas_str = ', '.join(columnas)
 
             # Insertar los datos en la tabla MySQL
@@ -273,7 +269,7 @@ def cargar_datos_t1(nombre_archivo, nombre_tabla):
 
 
         except mysql.connector.Error as error:
-            mensaje_log = f"{datetime.datetime.now()} - {nombre_archivo} Error mysql {error}"
+            mensaje_log = f"{datetime.datetime.now()} - {url} - {nombre_archivo} Error mysql {error}"
             escribir_log(nombre_archivo_log, mensaje_log)
 
         finally:
@@ -282,138 +278,7 @@ def cargar_datos_t1(nombre_archivo, nombre_tabla):
                 conexion.close()
        
     else:
-        mensaje_log = f"{datetime.datetime.now()} - {archivo} No se encontró el archivo en Descargas {nombre_archivo}"
-        escribir_log(nombre_archivo_log, mensaje_log)
-
-
-def cargar_datos_t2(nombre_archivo, nombre_tabla):
-    carpeta_descargas = os.path.join(os.path.expanduser("~"), "Downloads")
-    archivo = buscar_archivo(nombre_archivo)
-
-    if archivo:
-        # Ruta completa del archivo
-        ruta_archivo = os.path.join(carpeta_descargas, archivo)
-
-        # Leer los datos desde el archivo y saltar las primeras 7 líneas
-        datos = pd.read_csv(ruta_archivo, sep="\t", skiprows=6, encoding="utf-16")
-
-        # Llenar los valores NaN con ceros
-        datos.fillna("NULL", inplace=True)
-
-        # Obtener la fecha desde el archivo
-        fecha = obtener_fecha(os.path.join(carpeta_descargas, archivo))
-        #print("Fecha leída desde el archivo:")
-        #print(fecha)
-
-        # Convertir la fecha al formato adecuado
-        fecha_formateada = convertir_fecha_formato(fecha)
-
-        try:
-            config["port"] = puerto_bd  # Actualizar el puerto en la configuración
-            conexion = mysql.connector.connect(**config)
-            cursor = conexion.cursor()
-
-            # Crear la cadena de columnas para la inserción
-            columnas = list(datos.columns)
-            columnas = [
-            "user_name", "total_counter", "total_large_size_counter", "no_of_originals_counter", "no_of_prints_counter", "duplex_print_counter", "total_no_pages_output", "copy_total_total", "copy_total_full_color", "copy_total_black", "copy_total_2color", "copy_total_single_color", "copy_large_size_total", "copy_large_size_full_color", "copy_large_size_black", "copy_large_size_2color", "copy_large_size_single_color", "printer_total_total","printer_total_full_color","printer_total_black","printer_total_2color","printer_large_size_total","printer_large_size_full_color","printer_large_size_black","printer_large_size_2color","color_total_full_color","color_total_black","color_total_2color","color_total_single_color","color_large_size_full_color","color_large_size_black","color_large_size_2color","color_large_size_single_color","scan_total_print_full_color","scan_total_print_black","scan_total_scans","scan_total_fax_tx","scan_large_size_print_full_color","scan_large_size_print_black","scan_large_size_scans","fecha_contador"
-            ]
-
-            columnas_str = ', '.join(columnas)
-
-            # Insertar los datos en la tabla MySQL
-            for _, fila in datos.iterrows():
-                valores = tuple(fila)
-                placeholders = ', '.join(['%s'] * len(valores))
-                sql = f"INSERT INTO `{nombre_tabla}` ({columnas_str}) VALUES ({placeholders});"
-                cursor.execute(sql, valores)
-
-            # Actualizar la fecha en la tabla MySQL si es válida
-            if fecha_formateada:
-                sql = f"UPDATE `{nombre_tabla}` SET fecha_contador = %s WHERE fecha_contador = 'NULL'"
-                values = (fecha_formateada,)
-                cursor.execute(sql, values)
-
-            conexion.commit()
-            mover_archivo(nombre_archivo)
-
-
-        except mysql.connector.Error as error:
-            mensaje_log = f"{datetime.datetime.now()} - {nombre_archivo} Error mysql {error}"
-            escribir_log(nombre_archivo_log, mensaje_log)
-
-        finally:
-            if conexion.is_connected():
-                cursor.close()
-                conexion.close()
-
-
-    else:
-        mensaje_log = f"{datetime.datetime.now()} - {archivo} No se encontró el archivo en Descargas {nombre_archivo}"
-        escribir_log(nombre_archivo_log, mensaje_log)
-
-
-def cargar_datos_t3(nombre_archivo, nombre_tabla):
-    carpeta_descargas = os.path.join(os.path.expanduser("~"), "Downloads")
-    archivo = buscar_archivo(nombre_archivo)
-
-    if archivo:
-        # Ruta completa del archivo
-        ruta_archivo = os.path.join(carpeta_descargas, archivo)
-
-        # Leer los datos desde el archivo y saltar las primeras 7 líneas
-        datos = pd.read_csv(ruta_archivo, sep="\t", skiprows=6, encoding="utf-16")
-
-        # Llenar los valores NaN con ceros
-        datos.fillna("NULL", inplace=True)
-        # Obtener la fecha desde el archivo
-        fecha = obtener_fecha(os.path.join(carpeta_descargas, archivo))
-        #print("Fecha leída desde el archivo:")
-        #print(fecha)
-
-        # Convertir la fecha al formato adecuado
-        fecha_formateada = convertir_fecha_formato(fecha)
-
-        try:
-            config["port"] = puerto_bd  # Actualizar el puerto en la configuración
-            conexion = mysql.connector.connect(**config)
-            cursor = conexion.cursor()
-
-            # Crear la cadena de columnas para la inserción
-            columnas = list(datos.columns)
-            columnas = ["user_name","total_counter ","total_large_size_counter ","no_of_originals_counter ","no_of_prints_counter ","duplex_print_counter ","total_no_pages_output ","duplex_print_rate","psc_a3 ","psc_a4 ","psc_b4 ","psc_b5 ","psc_55x85 ","psc_85x11 ","psc_85x14 ","psc_11x17 ","psc_long ","psc_other ","nin1_2in1 ","nin1_4in1 ","nin1_other ","nin1_nin1printrate ","copy_total_total ","copy_total_full_color ","copy_total_black ","copy_total_2color ","copy_total_single_color ","copy_large_size_total ","copy_large_size_full_color ","copy_large_size_black ","copy_large_size_2color ","copy_large_size_single_color ","copy_copypaper_allcolor ","copy_copypaper_full_color ","copy_copypaper_black ","copy_copypaper_monobicolor ","printer_total_total ","printer_total_full_color ","printer_total_black ","printer_total_2color ","printer_large_size_total ","printer_large_size_full_color ","printer_large_size_black ","printer_large_size_2color ","printer_printpaper_allcolor ","printer_printpaper_full_color ","printer_printpaper_black ","printer_printpaper_monobicolor ","color_total_full_color ","color_total_black ","color_total_2color ","color_total_single_color ","color_large_size_full_color ","color_large_size_black ","color_large_size_2color ","color_large_size_single_color ","scan_total_print_full_color ","scan_total_print_black ","scan_total_scans ","scan_total_fax_tx ","scan_large_size_print_full_color ","scan_large_size_print_black ","scan_large_size_scans ","scan_printpaper_allcolor ","scan_printpaper_full_color ","scan_printpaper_black ","no_of_prints_counter_fullcolor ","no_of_prints_counter_black ","no_of_prints_counter_monobiocolor ","fecha_contador"
-            ]
-
-            columnas_str = ', '.join(columnas)
-
-            # Insertar los datos en la tabla MySQL
-            for _, fila in datos.iterrows():
-                valores = tuple(fila)
-                placeholders = ', '.join(['%s'] * len(valores))
-                sql = f"INSERT INTO `{nombre_tabla}` ({columnas_str}) VALUES ({placeholders});"
-                cursor.execute(sql, valores)
-
-            # Actualizar la fecha en la tabla MySQL si es válida
-            if fecha_formateada:
-                sql = f"UPDATE `{nombre_tabla}` SET fecha_contador = %s WHERE fecha_contador = 'NULL'"
-                values = (fecha_formateada,)
-                cursor.execute(sql, values)
-
-            conexion.commit()
-            mover_archivo(nombre_archivo)
-            
-        except mysql.connector.Error as error:
-            mensaje_log = f"{datetime.datetime.now()} - {nombre_archivo} Error mysql {error}"
-            escribir_log(nombre_archivo_log, mensaje_log)
-
-        finally:
-            if conexion.is_connected():
-                cursor.close()
-                conexion.close()
-
-
-    else:
-        mensaje_log = f"{datetime.datetime.now()} - {archivo} No se encontró el archivo en Descargas {nombre_archivo}"
+        mensaje_log = f"{datetime.datetime.now()} - {url} - No se pudo cargar el archivo {nombre_archivo}"
         escribir_log(nombre_archivo_log, mensaje_log)
 
 
@@ -427,6 +292,9 @@ nombre_archivo_log = "log.txt"
 patron_fecha = r"\d{8}"  # Busca 8 dígitos numéricos consecutivos.
 carpeta_descargas = os.path.join(os.path.expanduser("~"), "Downloads")
 
+columnas1 = ["user_name", "total_counter", "total_large_size_counter", "no_of_originals_counter","no_of_prints_counter", "copy_total_total", "copy_large_size_total","printer_total_total", "printer_large_size_total", "scan_total_print","scan_scans", "scan_fax_tx", "scan_large_size_print", "scan_large_size_scans", "fecha_contador"]
+columnas2 = ["user_name", "total_counter", "total_large_size_counter", "no_of_originals_counter", "no_of_prints_counter", "duplex_print_counter", "total_no_pages_output", "copy_total_total", "copy_total_full_color", "copy_total_black", "copy_total_2color", "copy_total_single_color", "copy_large_size_total", "copy_large_size_full_color", "copy_large_size_black", "copy_large_size_2color", "copy_large_size_single_color", "printer_total_total","printer_total_full_color","printer_total_black","printer_total_2color","printer_large_size_total","printer_large_size_full_color","printer_large_size_black","printer_large_size_2color","color_total_full_color","color_total_black","color_total_2color","color_total_single_color","color_large_size_full_color","color_large_size_black","color_large_size_2color","color_large_size_single_color","scan_total_print_full_color","scan_total_print_black","scan_total_scans","scan_total_fax_tx","scan_large_size_print_full_color","scan_large_size_print_black","scan_large_size_scans","fecha_contador"]
+columnas3 = ["user_name","total_counter ","total_large_size_counter ","no_of_originals_counter ","no_of_prints_counter ","duplex_print_counter ","total_no_pages_output ","duplex_print_rate","psc_a3 ","psc_a4 ","psc_b4 ","psc_b5 ","psc_55x85 ","psc_85x11 ","psc_85x14 ","psc_11x17 ","psc_long ","psc_other ","nin1_2in1 ","nin1_4in1 ","nin1_other ","nin1_nin1printrate ","copy_total_total ","copy_total_full_color ","copy_total_black ","copy_total_2color ","copy_total_single_color ","copy_large_size_total ","copy_large_size_full_color ","copy_large_size_black ","copy_large_size_2color ","copy_large_size_single_color ","copy_copypaper_allcolor ","copy_copypaper_full_color ","copy_copypaper_black ","copy_copypaper_monobicolor ","printer_total_total ","printer_total_full_color ","printer_total_black ","printer_total_2color ","printer_large_size_total ","printer_large_size_full_color ","printer_large_size_black ","printer_large_size_2color ","printer_printpaper_allcolor ","printer_printpaper_full_color ","printer_printpaper_black ","printer_printpaper_monobicolor ","color_total_full_color ","color_total_black ","color_total_2color ","color_total_single_color ","color_large_size_full_color ","color_large_size_black ","color_large_size_2color ","color_large_size_single_color ","scan_total_print_full_color ","scan_total_print_black ","scan_total_scans ","scan_total_fax_tx ","scan_large_size_print_full_color ","scan_large_size_print_black ","scan_large_size_scans ","scan_printpaper_allcolor ","scan_printpaper_full_color ","scan_printpaper_black ","no_of_prints_counter_fullcolor ","no_of_prints_counter_black ","no_of_prints_counter_monobiocolor ","fecha_contador"]
 
 url = "10.70.10.50"
 t_ingreso = 4
@@ -434,9 +302,13 @@ t_import_export = 21
 t_contador = 31
 t_salir = 27
 patron_fecha = r"363_A1UE011016227_UC_\d{8}"  # Busca 8 dígitos numéricos consecutivos.
+nombre_archivo = "363_A1UE011016227_UC_"
+nombre_tabla = "363_A1UE011016227"
+columnas = columnas1
 ingresar(url,t_ingreso)
-verificar_ingreso(url, t_import_export, t_contador, t_salir)
-verificar_descarga(patron_fecha,carpeta_descargas)
+verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+#verificar_descarga(patron_fecha,carpeta_descargas)
+cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
 
 url = "10.70.10.51"
 t_ingreso = 4
@@ -444,9 +316,13 @@ t_import_export = 21
 t_contador = 31
 t_salir = 27
 patron_fecha = r"363_A1UE011104367_UC_\d{8}"  # Busca 8 dígitos numéricos consecutivos.
+nombre_archivo = "363_A1UE011104367_UC_"
+nombre_tabla = "363_A1UE011104367"
+columnas = columnas1
 ingresar(url,t_ingreso)
-verificar_ingreso(url, t_import_export, t_contador, t_salir)
-verificar_descarga(patron_fecha,carpeta_descargas)
+verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+#verificar_descarga(patron_fecha,carpeta_descargas)
+cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
 
 url = "10.70.10.52"
 t_ingreso = 3
@@ -454,29 +330,41 @@ t_import_export = 16
 t_contador = 28
 t_salir = 23
 patron_fecha = r"364e_A61F011024714_UC_\d{8}"  # Busca 8 dígitos numéricos consecutivos.
+nombre_archivo = "364e_A61F011024714_UC_"
+nombre_tabla = "364e_A61F011024714"
+columnas = columnas2
 ingresar(url,t_ingreso)
-verificar_ingreso(url, t_import_export, t_contador, t_salir)
-verificar_descarga(patron_fecha,carpeta_descargas)
+verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+#verificar_descarga(patron_fecha,carpeta_descargas)
+cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
 
 url = "10.70.10.54"
 t_ingreso = 4
 t_import_export = 21
 t_contador = 31
 t_salir = 26
-patron_fecha = r"CAMBIAR\d{8}"  # Busca 8 dígitos numéricos consecutivos.
+patron_fecha = r"283_A1UF011003305_UC_\d{8}"  # Busca 8 dígitos numéricos consecutivos.
+nombre_archivo = "283_A1UF011003305_UC_"
+nombre_tabla = "283_A1UF011003305"
+columnas = columnas1
 ingresar(url,t_ingreso)
-verificar_ingreso(url, t_import_export, t_contador, t_salir)
-verificar_descarga(patron_fecha,carpeta_descargas)
+verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+#verificar_descarga(patron_fecha,carpeta_descargas)
+cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
 
 url = "10.70.10.55"
 t_ingreso = 4
 t_import_export = 21
 t_contador = 31
 t_salir = 27
-ingresar(url,t_ingreso)
-verificar_ingreso(url, t_import_export, t_contador, t_salir)
 patron_fecha = r"552_A2WV011008573_UC_\d{8}"  # Busca 8 dígitos numéricos consecutivos.
-verificar_descarga(patron_fecha,carpeta_descargas)
+nombre_archivo = "552_A2WV011008573_UC_"
+nombre_tabla = "552_A2WV011008573"
+columnas = columnas1
+ingresar(url,t_ingreso)
+verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+#verificar_descarga(patron_fecha,carpeta_descargas)
+cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
 
 url = "10.70.10.56"
 t_ingreso = 4
@@ -484,9 +372,13 @@ t_import_export = 21
 t_contador = 31
 t_salir = 27
 patron_fecha = r"223_A1UG011006937_UC_\d{8}"  # Busca 8 dígitos numéricos consecutivos.
+nombre_archivo = "223_A1UG011006937_UC_"
+nombre_tabla = "223_A1UG011006937"
+columnas = columnas1
 ingresar(url,t_ingreso)
-verificar_ingreso(url, t_import_export, t_contador, t_salir)
-verificar_descarga(patron_fecha,carpeta_descargas)
+verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+#verificar_descarga(patron_fecha,carpeta_descargas)
+cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
 
 url = "10.70.10.60"
 t_ingreso = 3
@@ -494,75 +386,54 @@ t_import_export = 16
 t_contador = 28
 t_salir = 23
 patron_fecha = r"C554e_A5AY011013622_UC_\d{8}"  # Busca 8 dígitos numéricos consecutivos.
+nombre_archivo = "C554e_A5AY011013622_UC_"
+nombre_tabla = "C554e_A5AY011013622"
+columnas = columnas2
 ingresar(url,t_ingreso)
-verificar_ingreso(url, t_import_export, t_contador, t_salir)
-verificar_descarga(patron_fecha,carpeta_descargas)
+verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+#verificar_descarga(patron_fecha,carpeta_descargas)
+cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
 
 url = "10.70.10.69"
 t_ingreso = 3
 t_import_export = 14
 t_contador = 31
 t_salir = 26
-patron_fecha = r"363_A1UE011015445_UC_\d{8}"  # Busca 8 dígitos numéricos consecutivos.
+patron_fecha = r"C227_A798011501042_UC_\d{8}"  # Busca 8 dígitos numéricos consecutivos.
+nombre_archivo = "C227_A798011501042_UC_"
+nombre_tabla = "C227_A798011501042"
+columnas = columnas3
 ingresar(url,t_ingreso)
-verificar_ingreso(url, t_import_export, t_contador, t_salir)
-verificar_descarga(patron_fecha,carpeta_descargas)
+verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+#verificar_descarga(patron_fecha,carpeta_descargas)
+cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
 
 url = "10.70.10.70"
 t_ingreso = 4
 t_import_export = 22
 t_contador = 32
 t_salir = 28
+patron_fecha = r"363_A1UE011015445_UC_\d{8}"  # Busca 8 dígitos numéricos consecutivos.
+nombre_archivo = "363_A1UE011015445_UC_"
+nombre_tabla = "363_A1UE011015445"
+columnas = columnas1
 ingresar(url,t_ingreso)
-verificar_ingreso(url, t_import_export, t_contador, t_salir)
+verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
 
 url = "10.70.10.71"
 t_ingreso = 3
-t_import_export = 14
-t_contador = 28
-t_salir = 23
-ingresar(url,t_ingreso)
-
-# Variable para el archivo y la tabla
-nombre_archivo = "283_A1UF011003305_UC_"
-nombre_tabla = "283_A1UF011003305"
-cargar_datos_t1(nombre_archivo,nombre_tabla)
-
-nombre_archivo = "223_A1UG011006937_UC_"
-nombre_tabla = "223_A1UG011006937"
-cargar_datos_t1(nombre_archivo,nombre_tabla)
-
+t_import_export = 16
+t_contador = 30
+t_salir = 25
+patron_fecha = r"224e_A61H011006163_UC_\d{8}"  # Busca 8 dígitos numéricos consecutivos.
 nombre_archivo = "224e_A61H011006163_UC_"
 nombre_tabla = "224e_A61H011006163"
-cargar_datos_t2(nombre_archivo,nombre_tabla)
+columnas = columnas2
+ingresar(url,t_ingreso)
+verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
 
-nombre_archivo = "363_A1UE011015445_UC_"
-nombre_tabla = "363_A1UE011015445"
-cargar_datos_t1(nombre_archivo,nombre_tabla)
-
-nombre_archivo = "363_A1UE011016227_UC_"
-nombre_tabla = "363_A1UE011016227"
-cargar_datos_t1(nombre_archivo,nombre_tabla)
-
-nombre_archivo = "363_A1UE011104367_UC_"
-nombre_tabla = "363_A1UE011104367"
-cargar_datos_t1(nombre_archivo,nombre_tabla)
-
-nombre_archivo = "364e_A61F011024714_UC_"
-nombre_tabla = "364e_A61F011024714"
-cargar_datos_t2(nombre_archivo,nombre_tabla)
-
-nombre_archivo = "552_A2WV011008573_UC_"
-nombre_tabla = "552_A2WV011008573"
-cargar_datos_t1(nombre_archivo,nombre_tabla)
-
-nombre_archivo = "C227_A798011501042_UC_"
-nombre_tabla = "C227_A798011501042"
-cargar_datos_t3(nombre_archivo,nombre_tabla)
-
-nombre_archivo = "C554e_A5AY011013622_UC_"
-nombre_tabla = "C554e_A5AY011013622"
-cargar_datos_t2(nombre_archivo,nombre_tabla)
 
 mensaje_log = f"{datetime.datetime.now()} - EXPORTACION TERMINADA ***************************"
 escribir_log(nombre_archivo_log,mensaje_log)
