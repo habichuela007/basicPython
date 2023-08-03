@@ -10,23 +10,27 @@ import datetime
 import shutil
 import pandas as pd
 import mysql.connector
+import pyautogui
+
+pyautogui.FAILSAFE = False
+
 
 # Variables para la conexión a la base de datos
 config = {
     "user": "rpa_konica",
     "password": "Bio$1984.",
-    "host": "10.20.10.93",
-    "port": 33060,  # Puerto predeterminado de MySQL
+    "host": "10.20.10.94",
+    "port": 3306,  # Puerto predeterminado de MySQL
     "database": "prb_impresiones",
 }
 
 # Puerto de la base de datos (ajústalo al puerto correcto)
-puerto_bd = 33060
+puerto_bd = 3306
 
 def ingresar(url,t_ingreso):
     webbrowser.open(url, new=2)
     # Cambia a modo administrador
-    time.sleep(14)
+    time.sleep(25)
     for _ in range (t_ingreso):
         keyboard.send_keys("{TAB}")                      
     time.sleep(1)
@@ -37,10 +41,14 @@ def ingresar(url,t_ingreso):
     time.sleep(2)
     keyboard.send_keys("{TAB 4}")                       
     time.sleep(1)
-    keyboard.send_keys("12345678")                       
+    for numero in range(1, 9):
+        #keyboard.send_keys(str(numero))
+        pyautogui.write(str(numero))
+        #print(numero)
+        time.sleep(0.1)
     time.sleep(1)
     keyboard.send_keys("{ENTER}")                       
-    time.sleep(8)
+    time.sleep(8)  
 
 
 def verificar_ingreso(url, t_import_export, t_contador, t_salir):
@@ -124,8 +132,10 @@ def verificar_descarga(patron_fecha,carpeta_descargas):
             break
 
     if archivo_descargado:
-        print(f"El archivo {archivo_descargado} se descargó exitosamente.")
 
+        # Enviar el atajo Ctrl+Alt+Delete
+        pyautogui.hotkey('alt','f4')
+        #print(f"El archivo {archivo_descargado} se descargó exitosamente.")
     else:
         mensaje_log = f"{datetime.datetime.now()} - {url} Archivo No encontrado"
         escribir_log(nombre_archivo_log,mensaje_log)
