@@ -27,121 +27,6 @@ config = {
 # Puerto de la base de datos (ajústalo al puerto correcto)
 puerto_bd = 3306
 
-def ingresar(url,t_ingreso):
-    webbrowser.open(url, new=2)
-    # Cambia a modo administrador
-    time.sleep(25)
-    for _ in range (t_ingreso):
-        keyboard.send_keys("{TAB}")                      
-    time.sleep(1)
-    keyboard.send_keys("{DOWN}")                       
-    time.sleep(1)
-    keyboard.send_keys("{ENTER}")                       
-    # INGRESA CONTRASEÑA
-    time.sleep(2)
-    keyboard.send_keys("{TAB 4}")                       
-    time.sleep(1)
-    for numero in range(1, 9):
-        keyboard.send_keys(str(numero))
-        #pyautogui.write(str(numero))
-        #print(numero)
-        time.sleep(0.1)
-    time.sleep(1)
-    keyboard.send_keys("{ENTER}")                       
-    time.sleep(8)  
-
-
-def verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas):
-    # Obtener todos los elementos de la ventana en el escritorio
-    time.sleep(10)
-    windows = Desktop(backend="uia").windows()
-    # Buscar la ventana de KONICA por título
-    konica_window = None
-    for window in windows:
-        if window.window_text().startswith("Mantenimiento") or window.window_text().startswith("Contador"):
-            konica_window = window
-            break
-    # Si se encontró la ventana, Descargar
-    if konica_window:
-        descargar_contador(t_import_export, t_contador, t_salir)
-        verificar_descarga(patron_fecha,carpeta_descargas)
-        time.sleep(2)
-    else:
-        mensaje_log = f"{datetime.datetime.now()} - {url} No se pudo ingresar"
-        escribir_log(nombre_archivo_log,mensaje_log)
-        time.sleep(2)        
-
-
-def descargar_contador(t_import_export,t_contador,t_salir):
-    # IR IMPORTAR/EXPORTAR
-    time.sleep(6)
-    for _ in range (t_import_export):
-        keyboard.send_keys("{TAB}")                       
-    time.sleep(1)
-    keyboard.send_keys("{ENTER}")      
-    
-    # SELECCCIONAR RADIUS CONTADOR
-    time.sleep(8)
-    for _ in range (t_contador):
-        keyboard.send_keys("{TAB}")  
-    time.sleep(1)
-    keyboard.send_keys("{DOWN}")                       
-    time.sleep(1)
-    keyboard.send_keys("{TAB}")
-    time.sleep(1)
-    keyboard.send_keys("{ENTER}")                       
-
-    # IR A CONTADOR DE USUARIO
-    time.sleep(1)
-    keyboard.send_keys("{TAB}")                       
-    time.sleep(1)
-    keyboard.send_keys("{DOWN}")                       
-    time.sleep(1)
-    keyboard.send_keys("{ENTER}")                       
-    # DESCARGAR
-    time.sleep(8)
-    keyboard.send_keys("{TAB}")                       
-    time.sleep(1)
-    keyboard.send_keys("{ENTER}")                       
-
-    #REGRESAR
-    time.sleep(10)
-    keyboard.send_keys("{TAB}")                       
-    time.sleep(1)
-    keyboard.send_keys("{ENTER}")                       
-
-    # SELECCIONAR CERRAR SESIÓN
-    time.sleep(8)
-    keyboard.send_keys("{TAB 4}")                       
-    time.sleep(1)
-    keyboard.send_keys("{ENTER}")                       
-
-    time.sleep(5)
-    for _ in range (t_salir):
-        keyboard.send_keys("{TAB}")                         
-    time.sleep(1)
-    keyboard.send_keys("{ENTER}")   
-    time.sleep(1)
-
-
-def verificar_descarga(patron_fecha,carpeta_descargas):
-    # Busca el archivo en la carpeta de descargas que cumpla con el patrón de la fecha.
-    archivo_descargado = None
-    for nombre_archivo in os.listdir(carpeta_descargas):
-        if re.search(patron_fecha, nombre_archivo):
-            archivo_descargado = os.path.join(carpeta_descargas, nombre_archivo)
-            break
-
-    if archivo_descargado:
-        #cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
-        # Enviar el atajo Ctrl+Alt+Delete
-        pyautogui.hotkey('alt','f4')
-        #print(f"El archivo {archivo_descargado} se descargó exitosamente.")
-    else:
-        mensaje_log = f"{datetime.datetime.now()} - {url} Archivo No encontrado en Descargas"
-        escribir_log(nombre_archivo_log,mensaje_log)
-
-
 def escribir_log(nombre_archivo_log,mensaje_log):
     # Obtener la ruta completa del archivo de log
     ruta_archivo_log = os.path.join(os.path.expanduser("~"), "Documents\log\contadores", nombre_archivo_log)
@@ -278,8 +163,9 @@ def cargar_datos(url,nombre_archivo, nombre_tabla,columnas):
                 conexion.close()
        
     else:
-        mensaje_log = f"{datetime.datetime.now()} - {url} - No se pudo cargar el archivo {nombre_archivo}"
-        escribir_log(nombre_archivo_log, mensaje_log)
+        pass
+        #mensaje_log = f"{datetime.datetime.now()} - {url} - No se pudo cargar el archivo {nombre_archivo}"
+        #escribir_log(nombre_archivo_log, mensaje_log)
 
 
 # Guarda la referencia al stdout original
@@ -295,6 +181,7 @@ carpeta_descargas = os.path.join(os.path.expanduser("~"), "Downloads")
 columnas1 = ["user_name", "total_counter", "total_large_size_counter", "no_of_originals_counter","no_of_prints_counter", "copy_total_total", "copy_large_size_total","printer_total_total", "printer_large_size_total", "scan_total_print","scan_scans", "scan_fax_tx", "scan_large_size_print", "scan_large_size_scans", "fecha_contador"]
 columnas2 = ["user_name", "total_counter", "total_large_size_counter", "no_of_originals_counter", "no_of_prints_counter", "duplex_print_counter", "total_no_pages_output", "copy_total_total", "copy_total_full_color", "copy_total_black", "copy_total_2color", "copy_total_single_color", "copy_large_size_total", "copy_large_size_full_color", "copy_large_size_black", "copy_large_size_2color", "copy_large_size_single_color", "printer_total_total","printer_total_full_color","printer_total_black","printer_total_2color","printer_large_size_total","printer_large_size_full_color","printer_large_size_black","printer_large_size_2color","color_total_full_color","color_total_black","color_total_2color","color_total_single_color","color_large_size_full_color","color_large_size_black","color_large_size_2color","color_large_size_single_color","scan_total_print_full_color","scan_total_print_black","scan_total_scans","scan_total_fax_tx","scan_large_size_print_full_color","scan_large_size_print_black","scan_large_size_scans","fecha_contador"]
 columnas3 = ["user_name","total_counter ","total_large_size_counter ","no_of_originals_counter ","no_of_prints_counter ","duplex_print_counter ","total_no_pages_output ","duplex_print_rate","psc_a3 ","psc_a4 ","psc_b4 ","psc_b5 ","psc_55x85 ","psc_85x11 ","psc_85x14 ","psc_11x17 ","psc_long ","psc_other ","nin1_2in1 ","nin1_4in1 ","nin1_other ","nin1_nin1printrate ","copy_total_total ","copy_total_full_color ","copy_total_black ","copy_total_2color ","copy_total_single_color ","copy_large_size_total ","copy_large_size_full_color ","copy_large_size_black ","copy_large_size_2color ","copy_large_size_single_color ","copy_copypaper_allcolor ","copy_copypaper_full_color ","copy_copypaper_black ","copy_copypaper_monobicolor ","printer_total_total ","printer_total_full_color ","printer_total_black ","printer_total_2color ","printer_large_size_total ","printer_large_size_full_color ","printer_large_size_black ","printer_large_size_2color ","printer_printpaper_allcolor ","printer_printpaper_full_color ","printer_printpaper_black ","printer_printpaper_monobicolor ","color_total_full_color ","color_total_black ","color_total_2color ","color_total_single_color ","color_large_size_full_color ","color_large_size_black ","color_large_size_2color ","color_large_size_single_color ","scan_total_print_full_color ","scan_total_print_black ","scan_total_scans ","scan_total_fax_tx ","scan_large_size_print_full_color ","scan_large_size_print_black ","scan_large_size_scans ","scan_printpaper_allcolor ","scan_printpaper_full_color ","scan_printpaper_black ","no_of_prints_counter_fullcolor ","no_of_prints_counter_black ","no_of_prints_counter_monobiocolor ","fecha_contador"]
+columnas4 = ["user_name", "total_counter", "total_large_size_counter", "no_of_originals_counter", "no_of_prints_counter", "copy_total_total", "copy_total_full_color", "copy_total_black", "copy_total_2color", "copy_total_single_color", "copy_large_size_total", "copy_large_size_full_color", "copy_large_size_black", "copy_large_size_2color", "copy_large_size_single_color", "printer_total_total","printer_total_full_color","printer_total_black","printer_total_2color","printer_large_size_total","printer_large_size_full_color","printer_large_size_black","printer_large_size_2color","color_total_full_color","color_total_black","color_total_2color","color_total_single_color","color_large_size_full_color","color_large_size_black","color_large_size_2color","color_large_size_single_color","scan_total_print_full_color","scan_total_print_black","scan_total_scans","scan_total_fax_tx","scan_large_size_print_full_color","scan_large_size_print_black","scan_large_size_scans","fecha_contador"]
 
 url = "10.70.10.50"
 t_ingreso = 4
@@ -305,8 +192,8 @@ patron_fecha = r"363_A1UE011016227_UC_\d{8}"  # Busca 8 dígitos numéricos cons
 nombre_archivo = "363_A1UE011016227_UC_"
 nombre_tabla = "363_A1UE011016227"
 columnas = columnas1
-ingresar(url,t_ingreso)
-verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+#ingresar(url,t_ingreso)
+#verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
 #verificar_descarga(patron_fecha,carpeta_descargas)
 cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
 
@@ -319,8 +206,8 @@ patron_fecha = r"363_A1UE011104367_UC_\d{8}"  # Busca 8 dígitos numéricos cons
 nombre_archivo = "363_A1UE011104367_UC_"
 nombre_tabla = "363_A1UE011104367"
 columnas = columnas1
-ingresar(url,t_ingreso)
-verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+#ingresar(url,t_ingreso)
+#verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
 #verificar_descarga(patron_fecha,carpeta_descargas)
 cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
 
@@ -333,8 +220,8 @@ patron_fecha = r"364e_A61F011024714_UC_\d{8}"  # Busca 8 dígitos numéricos con
 nombre_archivo = "364e_A61F011024714_UC_"
 nombre_tabla = "364e_A61F011024714"
 columnas = columnas2
-ingresar(url,t_ingreso)
-verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+#ingresar(url,t_ingreso)
+#verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
 #verificar_descarga(patron_fecha,carpeta_descargas)
 cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
 
@@ -347,8 +234,8 @@ patron_fecha = r"283_A1UF011003305_UC_\d{8}"  # Busca 8 dígitos numéricos cons
 nombre_archivo = "283_A1UF011003305_UC_"
 nombre_tabla = "283_A1UF011003305"
 columnas = columnas1
-ingresar(url,t_ingreso)
-verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+#ingresar(url,t_ingreso)
+#verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
 #verificar_descarga(patron_fecha,carpeta_descargas)
 cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
 
@@ -361,8 +248,8 @@ patron_fecha = r"552_A2WV011008573_UC_\d{8}"  # Busca 8 dígitos numéricos cons
 nombre_archivo = "552_A2WV011008573_UC_"
 nombre_tabla = "552_A2WV011008573"
 columnas = columnas1
-ingresar(url,t_ingreso)
-verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+#ingresar(url,t_ingreso)
+#verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
 #verificar_descarga(patron_fecha,carpeta_descargas)
 cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
 
@@ -375,8 +262,8 @@ patron_fecha = r"223_A1UG011006937_UC_\d{8}"  # Busca 8 dígitos numéricos cons
 nombre_archivo = "223_A1UG011006937_UC_"
 nombre_tabla = "223_A1UG011006937"
 columnas = columnas1
-ingresar(url,t_ingreso)
-verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+#ingresar(url,t_ingreso)
+#verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
 #verificar_descarga(patron_fecha,carpeta_descargas)
 cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
 
@@ -389,8 +276,8 @@ patron_fecha = r"C554e_A5AY011013622_UC_\d{8}"  # Busca 8 dígitos numéricos co
 nombre_archivo = "C554e_A5AY011013622_UC_"
 nombre_tabla = "C554e_A5AY011013622"
 columnas = columnas2
-ingresar(url,t_ingreso)
-verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+#ingresar(url,t_ingreso)
+#verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
 #verificar_descarga(patron_fecha,carpeta_descargas)
 cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
 
@@ -403,8 +290,8 @@ patron_fecha = r"C227_A798011501042_UC_\d{8}"  # Busca 8 dígitos numéricos con
 nombre_archivo = "C227_A798011501042_UC_"
 nombre_tabla = "C227_A798011501042"
 columnas = columnas3
-ingresar(url,t_ingreso)
-verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+#ingresar(url,t_ingreso)
+#verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
 #verificar_descarga(patron_fecha,carpeta_descargas)
 cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
 
@@ -417,8 +304,8 @@ patron_fecha = r"363_A1UE011015445_UC_\d{8}"  # Busca 8 dígitos numéricos cons
 nombre_archivo = "363_A1UE011015445_UC_"
 nombre_tabla = "363_A1UE011015445"
 columnas = columnas1
-ingresar(url,t_ingreso)
-verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+#ingresar(url,t_ingreso)
+#verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
 cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
 
 url = "10.70.10.71"
@@ -430,25 +317,72 @@ patron_fecha = r"224e_A61H011006163_UC_\d{8}"  # Busca 8 dígitos numéricos con
 nombre_archivo = "224e_A61H011006163_UC_"
 nombre_tabla = "224e_A61H011006163"
 columnas = columnas2
-ingresar(url,t_ingreso)
-verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+#ingresar(url,t_ingreso)
+#verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
 cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
 
 
+#mensaje_log = f"{datetime.datetime.now()} - EXPORTACION TERMINADA ***************************"
+#escribir_log(nombre_archivo_log,mensaje_log)
+
 #GRANJA#
-url = "10.6.3.90"
+url = "10.70.10.704"
 t_ingreso = 4
 t_import_export = 22
 t_contador = 32
 t_salir = 28
+patron_fecha = r"223_A1UG011006937_UC_\d{8}"  # Busca 8 dígitos numéricos consecutivos.
+nombre_archivo = "223_A1UG011006937_UC_"
+nombre_tabla = "223_A1UG011006937"
+columnas = columnas1
+#ingresar(url,t_ingreso)
+#verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
+
+#Archivo#
+patron_fecha = r"363_A1UE011020415_UC_\d{8}"  # Busca 8 dígitos numéricos consecutivos.
+nombre_archivo = "363_A1UE011020415_UC_"
+nombre_tabla = "363_A1UE011020415"
+columnas = columnas1
+#ingresar(url,t_ingreso)
+#verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
+
+#Archivo#
+patron_fecha = r"363_A1UE011024719_UC_\d{8}"  # Busca 8 dígitos numéricos consecutivos.
+nombre_archivo = "363_A1UE011024719_UC_"
+nombre_tabla = "363_A1UE011024719"
+columnas = columnas1
+#ingresar(url,t_ingreso)
+#verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
+
+#Archivo3#
+patron_fecha = r"363_A1UE011103699_UC_\d{8}"  # Busca 8 dígitos numéricos consecutivos.
+nombre_archivo = "363_A1UE011103699_UC_"
+nombre_tabla = "363_A1UE011103699"
+columnas = columnas1
+#ingresar(url,t_ingreso)
+#verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
+
+#Archivo4#
+patron_fecha = r"C452_A0P2011001067_UC_\d{8}"  # Busca 8 dígitos numéricos consecutivos.
+nombre_archivo = "C452_A0P2011001067_UC_"
+nombre_tabla = "C452_A0P2011001067"
+columnas = columnas4
+#ingresar(url,t_ingreso)
+#verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
+
+#Archivo5#
 patron_fecha = r"283_A1UF012000896_UC_\d{8}"  # Busca 8 dígitos numéricos consecutivos.
 nombre_archivo = "283_A1UF012000896_UC_"
 nombre_tabla = "283_A1UF012000896"
 columnas = columnas1
-ingresar(url,t_ingreso)
-verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
+#ingresar(url,t_ingreso)
+#verificar_ingreso(url, t_import_export, t_contador, t_salir,columnas)
 cargar_datos(url,nombre_archivo,nombre_tabla,columnas)
 
-
-mensaje_log = f"{datetime.datetime.now()} - EXPORTACION TERMINADA ***************************"
+mensaje_log = f"{datetime.datetime.now()} - carga finalizada ***************************"
 escribir_log(nombre_archivo_log,mensaje_log)
