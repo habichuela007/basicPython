@@ -1,0 +1,1 @@
+SAM_Admin = LASTNONBLANKVALUE('SAM-Admin'[fecha_contador],MAX('SAM-Admin'[fecha_contador]))
