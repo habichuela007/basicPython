@@ -1,5 +1,15 @@
 INSERT INTO 363_A1UE011104367(user_name,no_of_originals_counter,fecha_contador)
 VALUES
+('christian.sanchez','142','2022-10-15  17:01'),
+('christian.sanchez','283','2022-11-15  17:01'),
+('christian.sanchez','418','2022-12-15  17:01'),
+('christian.sanchez','593','2023-01-15  17:01'),
+('christian.sanchez','715','2023-02-15  17:01'),
+('christian.sanchez','866','2023-03-15  17:01'),
+('christian.sanchez','1040','2023-04-15  17:01'),
+('christian.sanchez','1180','2023-05-15  17:01'),
+('christian.sanchez','1284','2023-06-15  17:01');
+
 ('daniel.medina','20453','2022-10-15  17:01'),
 ('daniel.medina','20474','2022-11-15  17:01'),
 ('daniel.medina','20495','2022-12-15  17:01'),
