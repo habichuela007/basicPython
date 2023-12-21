@@ -64,7 +64,7 @@ for field in text_fields:
 time.sleep(3)
 parent.type_keys("gabriels{TAB}")
 time.sleep(1)
-parent.type_keys("Gab$1984")
+parent.type_keys("1803998440")
 time.sleep(1)
 parent.type_keys("{ENTER}")
 
